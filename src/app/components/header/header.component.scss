@@ -1,0 +1,26 @@
+.nav-link {
+    color: oklch(0.709 0.015 304.04);
+   // color: cyan;
+    font-size: 0.975rem;
+    font-family: var(--inter-font);
+}
+
+.home-icon, .mapa-icon, .cal-icon {
+    margin-left: 0.5rem;
+}
+
+.nav-link:hover {
+    color: white;
+    text-decoration: none;
+}
+
+// img {
+//     color: oklch(0.709 0.015 304.04);
+// }
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    };

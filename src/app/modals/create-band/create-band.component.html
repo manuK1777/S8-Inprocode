@@ -1,0 +1,15 @@
+<h2>Create New Band</h2>
+<mat-form-field appearance="fill">
+  <mat-label>Band Name</mat-label>
+  <input matInput [(ngModel)]="bandName">
+</mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>Website</mat-label>
+  <input matInput [(ngModel)]="webPage">
+</mat-form-field>
+
+<div class="actions">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+</div>
+

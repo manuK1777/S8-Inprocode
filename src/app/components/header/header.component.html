@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid">
     <div class="row">
         <div class="col">
             <header>
@@ -10,13 +10,55 @@
                         <a class="nav-link me-3" [routerLink]="['/mapa']">MAPA</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-3" [routerLink]="['/calendario']">CALENDAR</a>
+                        <a class="nav-link me-3" [routerLink]="['/calendario']">CALENDARIO</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" [routerLink]="['/grafics']">GRAFICS</a>
+                        <a class="nav-link me-3" [routerLink]="['/grafics']">GRAFICOS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [routerLink]="['/bandList']">LISTA DE ARTISTAS</a>
                     </li>
                 </ul>
             </header>
         </div>
     </div>
-</div>
+</div> -->
+
+<mat-list role="list">
+
+    <div class="home mt-3">
+        <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/home']">
+            <mat-icon>home</mat-icon><br>Home</a>
+        </mat-list-item>
+    </div>
+
+    <div class="mapa mt-3">
+        <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/mapa']">
+            <mat-icon>map</mat-icon> <br>Mapa</a>
+        </mat-list-item>
+    </div>
+
+    <div class="cal mt-3">
+        <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/calendario']">
+            <mat-icon>calendar_month</mat-icon><br>Calendario</a>
+        </mat-list-item>
+    </div>
+
+    <div class="bandList mt-3">
+        <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/bandList']">
+            <mat-icon>group</mat-icon><br>Artistas</a>
+        </mat-list-item>
+    </div>
+
+    <div class="eventList mt-3">
+        <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/bandList']">
+            <mat-icon>event</mat-icon><br>Eventos</a>
+        </mat-list-item>
+    </div>
+
+    <div class="grafics mt-3">
+        <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/grafics']">
+            <mat-icon>bar_chart</mat-icon><br>Gràficos</a>
+        </mat-list-item>
+    </div>
+
