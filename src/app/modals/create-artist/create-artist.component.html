@@ -1,0 +1,44 @@
+<h2>Create New artist</h2>
+
+<form [formGroup]="artistForm">
+  <mat-form-field appearance="fill">
+    <mat-label>artist Name</mat-label>
+    <input matInput formControlName="artistName">
+    <mat-error> @if (artistForm.controls['artistName'].hasError('required')){artist name is required}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email">
+    @if (artistForm.controls['email'].hasError('required')) {
+      <mat-error>Email is required</mat-error>
+    }
+    @if (artistForm.controls['email'].hasError('email') && artistForm.controls['email'].touched) {
+      <mat-error>Invalid email address</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Website</mat-label>
+    <input matInput formControlName="webPage">
+    <mat-error> @if (artistForm.controls['webPage'].hasError('pattern')){Invalid URL}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Contact Person</mat-label>
+    <input matInput formControlName="contact">
+    <mat-error> @if(artistForm.controls['contact'].hasError('required')){Contact person is required}</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Phone</mat-label>
+    <input matInput formControlName="phone">
+    <mat-error> @if(artistForm.controls['phone'].hasError('required')){Phone number is required}</mat-error>
+    <mat-error> @if(artistForm.controls['phone'].hasError('pattern')){Invalid phone number}</mat-error>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="artistForm.invalid">Save</button>
+  </div>
+</form>
