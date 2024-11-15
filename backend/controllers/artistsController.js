@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// Get all artists
 exports.getAllArtist = async (req, res) => {
   try {
     const [artists] = await db.query('SELECT * FROM artists');
@@ -10,7 +9,6 @@ exports.getAllArtist = async (req, res) => {
   }
 };
 
-// Get artist by id
 exports.getArtistById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -22,18 +20,6 @@ exports.getArtistById = async (req, res) => {
   }
 };
 
-// Create a new artist
-// exports.createArtist = async (req, res) => {
-//   const { artistName, email, webPage, contact, phone } = req.body;
-//   try {
-//     const result = await db.query('INSERT INTO artists (artistName, email, webPage, contact, phone) VALUES (?, ?, ?, ?, ?)', [artistName, email, webPage, contact, phone]);
-//     res.json({ id: result[0].insertId, artistName, email, webPage, contact, phone });
-//   } catch (error) {
-//     res.status(500).json({ error: 'Failed to create artist' });
-//   }
-// };
-
-// Create a new artist
 exports.createArtist = async (req, res) => {
   const { artistName, email, webPage, contact, phone } = req.body;
   
@@ -71,7 +57,6 @@ exports.createArtist = async (req, res) => {
   }
 };
 
-// Update artist
 exports.updateArtist = async (req, res) => {
   const { id } = req.params;
   const { artistName, email, webPage, contact, phone } = req.body;
@@ -83,7 +68,6 @@ exports.updateArtist = async (req, res) => {
   }
 };
 
-// Delete artist
 exports.deleteArtist = async (req, res) => {
   const { id } = req.params;
   try {

@@ -5,7 +5,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ArtistForm } from '../../models/artist.model';
+import { artist } from '../../models/artist.model';
+import { ArtistsService } from '../../services/artists.service';
 
 @Component({
   selector: 'app-create-artist',
@@ -27,7 +28,8 @@ export class CreateArtistComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateArtistComponent>,
-    private http: HttpClient
+    private http: HttpClient,
+    private artistsService: ArtistsService
   ) {}
 
   ngOnInit(): void {
@@ -41,30 +43,27 @@ export class CreateArtistComponent implements OnInit {
   }
 
   onSave(): void {
+   
     if (this.artistForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
       this.errorMessage = '';
 
-      const artistData: ArtistForm = this.artistForm.value;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      const artistData: artist = this.artistForm.value;
 
-      console.log('Sending artist data:', artistData);
-
-      this.http.post('http://localhost:5000/api/artists', artistData, { headers })
-        .subscribe({
-          next: (response) => {
-            console.log('Artist created successfully:', response);
-            this.dialogRef.close(response);
-          },
-          error: (error) => {
-            console.error('Error details:', error);
-            this.errorMessage = error.error?.message || error.error?.error || 'Failed to create artist';
-            this.isSubmitting = false;
-          },
-          complete: () => {
-            this.isSubmitting = false;
-          }
-        });
+      this.artistsService.addArtist(artistData).subscribe({
+        next: (response) => {
+          console.log('Artist created successfully:', response);
+          this.dialogRef.close(response);
+        },
+        error: (error) => {
+          console.error('Error details:', error);
+          this.errorMessage = error.error?.message || error.error?.error || 'Failed to create artist';
+          this.isSubmitting = false;
+        },
+        complete: () => {
+          this.isSubmitting = false;
+        }
+      });
     } else {
       this.markFormGroupTouched(this.artistForm);
     }

@@ -1,1 +1,22 @@
-
+<mat-sidenav-container class="home-layout">
+ 
+    <mat-sidenav mode="side" [(opened)]="isSidenavOpen" class="sidebar">
+      <app-sidebar></app-sidebar>
+    </mat-sidenav>
+  
+      <!-- Main Content Area
+  <mat-sidenav-content class="main-content">
+    @if (currentPath === 'home') {
+      <app-dashboard></app-dashboard>
+    } @else {
+      <router-outlet></router-outlet>
+    }
+  </mat-sidenav-content>
+</mat-sidenav-container> -->
+    <mat-sidenav-content class="main-content">
+      <!-- <app-dashboard></app-dashboard> -->
+       
+       <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  

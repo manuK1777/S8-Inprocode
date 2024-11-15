@@ -1,39 +1,51 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
+
 @include mat.core();
 
-// $theme: mat.define-theme((
-//   color: (
-//     theme-type: dark,
-//     primary: mat.$violet-palette,
-//   ),
-//   typography: (
-//     brand-family: 'Comic Sans',
-//     bold-weight: 900
-//   ),
-//   density: (
-//     scale: -1
-//   )
-// ));
+$theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$violet-palette,
+  ),
+  typography: (
+    brand-family: 'Comic Sans',
+    bold-weight: 900
+  ),
+  density: (
+    scale: -1
+  )
+));
 
-
-.mat-typography {
-  background-color: #000;
-  color: white;
+* {
+  @include mat.all-component-themes($theme);
 }
 
-html,
 body {
-  height: 100%;
+  border: 1px solid map-get($theme, primary, 500);
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24;
-}
+
+
+// .mat-h1{
+//   font-size: 1.5rem;
+//   margin-left: 0.9rem;
+// }
+
+
+
+
+// .mat-typography {
+//   background-color: #000;
+//   color: white;
+// }
+
+// html,
+// body {
+//   height: 100%;
+// }
+
+
 
 // body {
 //   margin: 0;

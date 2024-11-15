@@ -1,0 +1,57 @@
+<mat-toolbar class="sidenav-header">TouringHub</mat-toolbar>
+
+
+    <!-- <mat-sidenav #sidenav mode="side" opened class="sidenav" [fixedInViewport]="options.value.fixed"
+        [fixedTopGap]="options.value.top" [fixedBottomGap]="options.value.bottom">
+        {{options.value.fixed ? 'Fixed' : 'Non-fixed'}} Sidenav
+    </mat-sidenav>
+
+    <mat-sidenav-content class="sidenav-content"> -->
+
+        <mat-list role="list">
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/home']">
+                        <mat-icon><div class="mat-icon-home"></div> home</mat-icon><br><p>Home</p></a>
+                </mat-list-item>
+            </div>
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/dashboard']">
+                        <mat-icon>dashboard</mat-icon><br><p>Panel</p></a>
+                </mat-list-item>
+            </div>
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/mapa']">
+                        <mat-icon>map</mat-icon> <br><p>Mapa</p></a>
+                </mat-list-item>
+            </div>
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/calendario']">
+                        <mat-icon>calendar_month</mat-icon><br><p>Calendario</p></a>
+                </mat-list-item>
+            </div>
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/artistList']">
+                        <mat-icon>group</mat-icon><br><p>Artistas</p></a>
+                </mat-list-item>
+            </div>
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/']">
+                        <mat-icon>event</mat-icon><br><p>Eventos</p></a>
+                </mat-list-item>
+            </div>
+
+            <div class="icon">
+                <mat-list-item role="listitem"><a class="nav-link" [routerLink]="['/']">
+                        <mat-icon>bar_chart</mat-icon><br><p>Gráficos</p></a>
+                </mat-list-item>
+            </div>
+        </mat-list>
+
+<mat-toolbar class="sidenav-footer">Footer</mat-toolbar>
+
