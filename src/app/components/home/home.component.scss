@@ -13,6 +13,16 @@
     overflow: auto;
   }
 
+  mat-sidenav {
+    overflow: hidden !important;
+   }
+
+   .mat-drawer {
+    overflow: hidden !important;
+   }
+
+
+ 
 //   .main-content {
 //    display: flex;
 //    justify-content: center;

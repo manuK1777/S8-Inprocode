@@ -1,11 +1,5 @@
-// h5 {
-//     font-size: 1.2rem;
-//     margin-left: 2.3rem;
-//     margin-top: 4rem;
-// }
 
 .table-container {
-   // display: flex;
     justify-content: center;
     width: 90%;
     margin-left: auto;
@@ -18,22 +12,15 @@
     margin-left: 2.3rem;
 }
 
-// $custom-h1: (
-//   font-size: 1.5rem,
-//   margin-left: 0.9rem
-// );
-
-// @use '~@angular/material/theming';
-// @include mat.core();
-
-// h1 {
-//     @include mat.typography($custom-h1);
-// }
-
 .mat-h1{
     font-size: 1.5rem;
     margin-left: 2.8rem;
-   // margin-left: 2.3rem;
     margin-top: 2rem;
 }
+
+tr[mat-row]:hover {
+    background-color: #292626; 
+  }
+
+
     

@@ -6,11 +6,13 @@ import { OpenModalCreateArtistService } from '../../services/open-modal-create-a
 import { HttpClient } from '@angular/common/http';
 import { ArtistsService } from '../../services/artists.service';
 import { artist } from '../../models/artist.model';
+import { ArtistDetailComponent } from '../artist-detail/artist-detail.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-artist-list',
   standalone: true,
-  imports: [ MatButton, MatTableModule, MatPaginatorModule ],
+  imports: [ MatButton, MatTableModule, MatPaginatorModule, ArtistDetailComponent, RouterLink ],
   templateUrl: './artist-list.component.html',
   styleUrl: './artist-list.component.scss'
 })

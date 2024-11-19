@@ -5,6 +5,7 @@ import { FullCalendarComponent } from './components/full-calendar/full-calendar.
 import { GraficsComponent } from './components/grafics/grafics.component';
 import { ArtistListComponent } from './components/artist-list/artist-list.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ArtistDetailComponent } from './components/artist-detail/artist-detail.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
@@ -15,6 +16,7 @@ export const routes: Routes = [
         { path: 'dashboard', component: DashboardComponent },
         { path: 'artistList', component: ArtistListComponent },
         { path: 'calendario', component: FullCalendarComponent },
+        { path: 'artist/:id', component: ArtistDetailComponent}
       ] },
 
 // export const routes: Routes = [

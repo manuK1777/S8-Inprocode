@@ -4,7 +4,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-home',

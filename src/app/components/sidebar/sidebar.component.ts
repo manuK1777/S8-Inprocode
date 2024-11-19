@@ -1,3 +1,4 @@
+
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterModule } from '@angular/router';
@@ -6,7 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 
 @Component({
@@ -21,7 +22,8 @@ import { FormBuilder } from '@angular/forms';
     MatTabsModule,
     MatListModule,
     MatIconModule,
-    MatToolbarModule
+    MatToolbarModule,
+    ReactiveFormsModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'

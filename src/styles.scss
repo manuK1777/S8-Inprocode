@@ -1,54 +1,46 @@
-/* You can add global styles to this file, and also import other style files */
+
+// @use '@angular/material' as mat;
+
+// @include mat.core();
+
+
 @use '@angular/material' as mat;
 
 @include mat.core();
 
-$theme: mat.define-theme((
+// Define a dark theme
+$dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
     primary: mat.$violet-palette,
   ),
-  typography: (
-    brand-family: 'Comic Sans',
-    bold-weight: 900
-  ),
-  density: (
-    scale: -1
-  )
 ));
 
-* {
-  @include mat.all-component-themes($theme);
+// Define a light theme
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+  ),
+));
+
+html {
+  // Apply the dark theme by default
+  @include mat.core-theme($dark-theme);
+  @include mat.button-theme($dark-theme);
+
+  // Apply the light theme only when the user prefers light themes.
+  @media (prefers-color-scheme: light) {
+    // Use the `-color` mixins to only apply color styles without reapplying the same
+    // typography and density styles.
+    @include mat.core-color($light-theme);
+    @include mat.button-color($light-theme);
+  }
 }
 
-body {
-  border: 1px solid map-get($theme, primary, 500);
-}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
 
-// .mat-h1{
-//   font-size: 1.5rem;
-//   margin-left: 0.9rem;
-// }
-
-
-
-
-// .mat-typography {
-//   background-color: #000;
-//   color: white;
-// }
-
-// html,
-// body {
-//   height: 100%;
-// }
-
-
-
-// body {
-//   margin: 0;
-//   font-family: Roboto, "Helvetica Neue", sans-serif;
-  
-// }
