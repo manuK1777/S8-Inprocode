@@ -16,9 +16,17 @@ export class ArtistsService {
     return this.http.get<artist[]>(this.apiUrl);
   }
 
+getArtistById(id: number): Observable<artist> {
+  const url = `${this.apiUrl}/${id}`;
+  return this.http.get<artist>(url);
+}
+
   addArtist(newArtist: artist): Observable<artist> {
     return this.http.post<artist>(this.apiUrl, newArtist);
   }
 
+  addArtistWithPhoto(formData: FormData): Observable<any> {
+    return this.http.post(this.apiUrl, formData); 
+  }
 
 }

@@ -1,8 +1,10 @@
 export interface artist {
-    bandName: string;
+    id: number;
+    artistName: string;
     email: string;
     webPage?: string;
     contact: string;
     phone: string;
+    photo?: string;
   }
   

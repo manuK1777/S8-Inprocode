@@ -4,8 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { artist } from '../../models/artist.model';
+import { HttpClient } from '@angular/common/http';
 import { ArtistsService } from '../../services/artists.service';
 
 @Component({
@@ -24,6 +23,8 @@ export class CreateArtistComponent implements OnInit {
   artistForm!: FormGroup;
   errorMessage: string = '';
   isSubmitting: boolean = false;
+  selectedFile: File | null = null; 
+  previewUrl: string | ArrayBuffer | null = null; 
 
   constructor(
     private fb: FormBuilder,
@@ -42,15 +43,61 @@ export class CreateArtistComponent implements OnInit {
     });
   }
 
+   onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.processFile(input.files[0]);
+    }
+  }
+
+  onFileDropped(event: Event): void {
+    const dragEvent = event as DragEvent; 
+    dragEvent.preventDefault(); 
+    if (dragEvent.dataTransfer && dragEvent.dataTransfer.files.length > 0) {
+      this.processFile(dragEvent.dataTransfer.files[0]);
+    }
+  }
+
+  private processFile(file: File): void {
+    // Validate file size (10 KB - 5 MB)
+    if (file.size < 10 * 1024 || file.size > 5 * 1024 * 1024) {
+      alert('File size must be between 10 KB and 5 MB.');
+      return;
+    }
+
+    // Validate file type (JPG or PNG)
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      alert('Invalid file type. Please upload a JPG or PNG image.');
+      return;
+    }
+
+    this.selectedFile = file;
+
+    // Generate a preview for the image
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   onSave(): void {
-   
     if (this.artistForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
       this.errorMessage = '';
 
-      const artistData: artist = this.artistForm.value;
+      // Prepare FormData with the form values and the selected file
+      const formData = new FormData();
+      formData.append('artistName', this.artistForm.get('artistName')?.value);
+      formData.append('email', this.artistForm.get('email')?.value);
+      formData.append('webPage', this.artistForm.get('webPage')?.value || '');
+      formData.append('contact', this.artistForm.get('contact')?.value);
+      formData.append('phone', this.artistForm.get('phone')?.value);
+      if (this.selectedFile) {
+        formData.append('photo', this.selectedFile);
+      }
 
-      this.artistsService.addArtist(artistData).subscribe({
+      this.artistsService.addArtistWithPhoto(formData).subscribe({
         next: (response) => {
           console.log('Artist created successfully:', response);
           this.dialogRef.close(response);
@@ -62,15 +109,15 @@ export class CreateArtistComponent implements OnInit {
         },
         complete: () => {
           this.isSubmitting = false;
-        }
+        },
       });
     } else {
       this.markFormGroupTouched(this.artistForm);
     }
   }
 
-  private markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);

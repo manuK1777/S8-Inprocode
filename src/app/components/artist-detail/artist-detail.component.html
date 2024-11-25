@@ -1,1 +1,40 @@
-<p>artist-detail works!</p>
+
+<mat-grid-list cols="6" rowHeight="200px">
+    @for (tile of tiles; track tile) {
+      <mat-grid-tile
+        [colspan]="tile.cols"
+        [rowspan]="tile.rows"
+        [style.background]="tile.color"
+        class="custom-tile">
+        <ng-container [ngSwitch]="tile.type">
+
+          <div *ngSwitchCase="'text'" class="tile-text">{{ tile.text }}</div>
+  
+          <div *ngSwitchCase="'header'" class="tile-header"><h1 class="mat-h1">{{ tile.text }}</h1></div>
+
+          <img *ngSwitchCase="'image'" [src]="tile.imageUrl" class="tile-image" alt="Tile image" />
+  
+          <div *ngSwitchCase="'button'" mat-raised-button color="primary" (click)="onButtonClick(tile)">
+            <div class="fab-menu">
+              <button mat-raised-button color="primary" aria-label="Push Photo" (click)="onPushPhoto()">
+                <mat-icon>add_a_photo</mat-icon>Subir foto
+              </button>
+              <button mat-raised-button color="primary" aria-label="Edit Info" (click)="onEditInfo()">
+                <mat-icon>edit</mat-icon>Editar artista
+              </button>
+              <button mat-raised-button color="primary" aria-label="Delete Artist" (click)="onDeleteArtist()">
+                <mat-icon>delete</mat-icon>Borrar artista
+              </button>
+            </div>
+          </div>
+
+          <!-- Default fallback -->
+          <div *ngSwitchDefault>Default Content</div>
+        </ng-container>
+    </mat-grid-tile>
+    }
+  </mat-grid-list>
+
+
+  
+  

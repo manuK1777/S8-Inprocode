@@ -16,7 +16,7 @@ export const routes: Routes = [
         { path: 'dashboard', component: DashboardComponent },
         { path: 'artistList', component: ArtistListComponent },
         { path: 'calendario', component: FullCalendarComponent },
-        { path: 'artist/:id', component: ArtistDetailComponent}
+        { path: 'artist/:id/:artistSlug', component: ArtistDetailComponent}
       ] },
 
 // export const routes: Routes = [

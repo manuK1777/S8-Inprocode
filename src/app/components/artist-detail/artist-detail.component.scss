@@ -1,0 +1,42 @@
+@use '@angular/material' as mat;
+
+mat-grid-list {
+    margin: 20px;
+}
+
+mat-grid-tile {
+    border: 1px solid #ccc;
+}
+
+.tile-header {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;  
+}
+
+.mat-h1{
+    font-size: 1.6rem;
+  }
+
+  .fab-menu {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 19px; 
+}
+
+mat-mini-fab {
+    padding-right: 2rem;
+}
+
+.tile-image {
+
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+
+    
+}
+  

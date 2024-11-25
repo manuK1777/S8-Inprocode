@@ -1,23 +1,21 @@
 import { AfterViewInit, Component, ViewChild, viewChild } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { OpenModalCreateArtistService } from '../../services/open-modal-create-artist.service';
 import { HttpClient } from '@angular/common/http';
 import { ArtistsService } from '../../services/artists.service';
 import { artist } from '../../models/artist.model';
-import { ArtistDetailComponent } from '../artist-detail/artist-detail.component';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
   selector: 'app-artist-list',
   standalone: true,
-  imports: [ MatButton, MatTableModule, MatPaginatorModule, ArtistDetailComponent, RouterLink ],
+  imports: [ MatButton, MatTableModule, MatPaginatorModule, RouterLink ],
   templateUrl: './artist-list.component.html',
   styleUrl: './artist-list.component.scss'
 })
 export class ArtistListComponent implements AfterViewInit {
-//[x: string]: any;
 
   displayedColumns: string[] = ['id', 'artistName', 'email', 'webPage', 'contact', 'phone'];
   dataSource = new MatTableDataSource<artist>([]);
@@ -28,6 +26,7 @@ export class ArtistListComponent implements AfterViewInit {
     private openModalCreateArtistService: OpenModalCreateArtistService,
     private http: HttpClient,
     private artistsService: ArtistsService,  
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +55,11 @@ export class ArtistListComponent implements AfterViewInit {
         this.loadArtists();
       }
     });
+  }
+
+  onSelectArtist(artist: artist) {
+    const artistSlug = artist.artistName.toLowerCase().replace(/ /g, '-');
+    this.router.navigate(['/artist', artist.id, artistSlug]);
   }
 
 }

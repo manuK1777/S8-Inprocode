@@ -11,10 +11,10 @@
     <mat-label>Email</mat-label>
     <input matInput formControlName="email">
     @if (artistForm.controls['email'].hasError('required')) {
-      <mat-error>Email is required</mat-error>
+    <mat-error>Email is required</mat-error>
     }
     @if (artistForm.controls['email'].hasError('email') && artistForm.controls['email'].touched) {
-      <mat-error>Invalid email address</mat-error>
+    <mat-error>Invalid email address</mat-error>
     }
   </mat-form-field>
 
@@ -36,6 +36,32 @@
     <mat-error> @if(artistForm.controls['phone'].hasError('required')){Phone number is required}</mat-error>
     <mat-error> @if(artistForm.controls['phone'].hasError('pattern')){Invalid phone number}</mat-error>
   </mat-form-field>
+
+  <div cdkDropList class="drop-zone" (cdkDropListDropped)="onFileDropped($event)">
+    <div class="drop-message">
+      <p>Drag and drop the artist's photo here, or click to select one</p>
+      <button mat-raised-button color="primary" (click)="fileInput.click()">
+        Choose File
+      </button>
+    </div>
+    <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/jpeg, image/png" />
+  </div>
+
+   @if (previewUrl) {
+    <div class="img-preview">
+      <h3>Preview:</h3>
+      <img [src]="previewUrl" alt="Profile Preview" style="max-width: 100%; height: auto;" />
+    </div>
+  }
+
+  <div class="actions">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="artistForm.invalid">
+      Save
+    </button>
+  </div>
+
+
 
   <div class="actions">
     <button mat-button (click)="onCancel()">Cancel</button>
