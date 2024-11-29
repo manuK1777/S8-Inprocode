@@ -1,4 +1,4 @@
-.img-preview {
+.img-preview-img {
     max-width: 150px;
     max-height: 150px;
 }
@@ -6,3 +6,16 @@
 p {
     color: white;
 };
+
+h3 {
+    font-size: 0.9rem;
+    color: white;
+}
+
+form {
+    overflow: auto;
+}
+
+.drop-zone {
+    background-color: aquamarine;
+}

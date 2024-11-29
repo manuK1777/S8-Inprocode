@@ -28,7 +28,21 @@ export class ArtistsService {
   addArtistWithPhoto(formData: FormData): Observable<any> {
     return this.http.post(this.apiUrl, formData); 
   }
- 
+
+  updateArtistPhoto(id: number, photo: File): Observable<artist> {
+    const formData = new FormData();
+    formData.append('photo', photo);
+
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+
+    return this.http.put<artist>(`${this.apiUrl}/${id}`, formData, { headers });
+  }
+
+  deleteArtistImage(artistId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${artistId}/photo`);
+  }
+
   editArtist(id: number, formData: FormData): Observable<artist> {
     console.log('FormData entries:');
     for (let [key, value] of (formData as any).entries()) {
@@ -39,7 +53,10 @@ export class ArtistsService {
     headers.append('Content-Type', 'multipart/form-data');
   
     return this.http.put<artist>(`${this.apiUrl}/${id}`, formData, { headers });
-    // return this.http.put<artist>(`${this.apiUrl}/${id}`, formData);   
+  }
+
+  deleteArtist(id: number): Observable<artist> {
+    return this.http.delete<artist>(`${this.apiUrl}/${id}`);
   }
 
 }

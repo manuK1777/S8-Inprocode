@@ -62,4 +62,12 @@ export class ArtistListComponent implements AfterViewInit {
     this.router.navigate(['/artist', artist.id, artistSlug]);
   }
 
+  sanitizeWebPage(url: string | null): string {
+    if (!url) {
+      return '#'; 
+    }
+    return url.startsWith('http://') || url.startsWith('https://') ? url : `http://${url}`;
+  }
+  
+
 }

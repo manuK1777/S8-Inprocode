@@ -1,11 +1,21 @@
-
+const fs = require('fs');
 const db = require('../config/db');
 const path = require("path");
 
 exports.getAllArtist = async (req, res) => {
   try {
     const [artists] = await db.query("SELECT * FROM artists");
-    res.json(artists);
+
+     
+      const artistsWithPhoto = artists.map(artist => ({
+        ...artist,
+        photo: artist.photo || null, 
+      }));
+
+      res.json(artistsWithPhoto);
+
+      // res.json(artists);
+
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve artists" });
   }
@@ -16,7 +26,17 @@ exports.getArtistById = async (req, res) => {
   try {
     const [artist] = await db.query("SELECT * FROM artists WHERE id = ?", [id]);
     if (!artist[0]) return res.status(404).json({ error: "Artist not found" });
-    res.json(artist[0]);
+
+   
+     const artistWithPhoto = {
+      ...artist[0],
+      photo: artist[0].photo || null, 
+    };
+
+    res.json(artistWithPhoto);
+
+    // res.json(artist[0]);
+
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve artist" });
   }
@@ -59,66 +79,11 @@ exports.createArtist = async (req, res) => {
   }
 };
 
-// Get all artists
-exports.getAllArtist = async (req, res) => {
-  try {
-    const [artists] = await db.query("SELECT * FROM artists");
-    res.json(artists);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve artists" });
-  }
-};
-
-// Get artist by ID
-exports.getArtistById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const [artist] = await db.query("SELECT * FROM artists WHERE id = ?", [id]);
-    if (!artist.length) return res.status(404).json({ error: "Artist not found" });
-    res.json(artist[0]);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve artist" });
-  }
-};
-
-// Create a new artist
-exports.createArtist = async (req, res) => {
-  const { artistName, email, webPage, contact, phone } = req.body;
-  const photo = req.file ? req.file.filename : null;
-
-  if (!artistName || !email || !contact || !phone) {
-    return res.status(400).json({
-      error: "Missing required fields",
-      received: req.body,
-    });
-  }
-
-  try {
-    const result = await db.query(
-      "INSERT INTO artists (artistName, email, webPage, contact, phone, photo) VALUES (?, ?, ?, ?, ?, ?)",
-      [artistName, email, webPage || null, contact, phone, photo]
-    );
-
-    res.status(201).json({
-      id: result[0].insertId,
-      artistName,
-      email,
-      webPage,
-      contact,
-      phone,
-      photo,
-    });
-  } catch (error) {
-    console.error("Database error:", error);
-    res.status(500).json({ error: "Failed to create artist", details: error.message });
-  }
-};
-
 // Update an existing artist
 exports.updateArtist = async (req, res) => {
   const { id } = req.params;
   const { artistName, email, webPage, contact, phone } = req.body;
-  const photo = req.file ? req.file.filename : null; // Handle uploaded photo
+  const photo = req.file ? req.file.filename : null; 
 
   try {
     // Check if the artist exists
@@ -169,54 +134,32 @@ exports.deleteArtist = async (req, res) => {
   }
 };
 
+exports.deleteArtistImage = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    // Retrieve artist by ID
+    const [artist] = await db.query('SELECT photo FROM artists WHERE id = ?', [id]);
+    if (!artist.length) {
+      return res.status(404).json({ error: 'Artist not found' });
+    }
 
+    const photoPath = artist[0].photo
+      ? path.join(__dirname, '../uploads', artist[0].photo)
+      : null;
 
+    if (photoPath && fs.existsSync(photoPath)) {
+      // Delete the photo file
+      fs.unlinkSync(photoPath);
+      console.log(`Deleted file: ${photoPath}`);
+    }
 
+    // Update database to remove photo reference
+    await db.query('UPDATE artists SET photo = NULL WHERE id = ?', [id]);
 
-
-
-// exports.updateArtist = async (req, res) => {
-
-//   console.log('Request body:', req.body);
-//   console.log('Uploaded file:', req.file);
-
-//   const { id } = req.params;
-//   const { artistName, email, webPage, contact, phone } = req.body;
-//   const photo = req.file ? req.file.filename : null;
-
- 
-
-//   const updatedPhoto = req.file ? req.file.filename : existingArtist[0].photo;
-
-//   try {
-//     // Check if the artist exists
-//     const [existingArtist] = await db.query('SELECT * FROM artists WHERE id = ?', [id]);
-//     if (!existingArtist.length) {
-//       return res.status(404).json({ error: 'Artist not found' });
-//     }
-
-//     const updatedPhoto = photo || existingArtist[0].photo;
-
-//     // Update the artist
-//     await db.query(
-//       'UPDATE artists SET artistName = ?, email = ?, webPage = ?, contact = ?, phone = ?, photo = ? WHERE id = ?',
-//       [
-//         artistName || existingArtist[0].artistName,
-//         email || existingArtist[0].email,
-//         webPage || existingArtist[0].webPage,
-//         contact || existingArtist[0].contact,
-//         phone || existingArtist[0].phone,
-//         photo || existingArtist[0].photo,
-//         id,
-//       ]
-//     );
-
-//     // Return updated artist details
-//     const [updatedArtist] = await db.query('SELECT * FROM artists WHERE id = ?', [id]);
-//     res.json(updatedArtist[0]);
-//   } catch (error) {
-//     console.error('Failed to update artist:', error);
-//     res.status(500).json({ error: 'Failed to update artist' });
-//   }
-// };
+    res.json({ message: 'Photo deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting photo:', error);
+    res.status(500).json({ error: 'Failed to delete photo' });
+  }
+};

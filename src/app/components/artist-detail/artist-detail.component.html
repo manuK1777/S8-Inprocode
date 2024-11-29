@@ -19,17 +19,29 @@
               </button>
           </div>
 
-          <img *ngSwitchCase="'image'" [src]="tile.imageUrl" class="tile-image" alt="Tile image" />
+          <img 
+          *ngSwitchCase="'image'" 
+          [src]="tile.imageUrl" 
+          class="tile-image" 
+          alt="Tile image"
+          [style.visibility]="tile.imageUrl ? 'visible' : 'hidden'"/>
+        
   
           <div *ngSwitchCase="'button'" mat-raised-button color="primary">
             <div class="fab-menu">
-              <button mat-raised-button color="primary" aria-label="Push Photo" (click)="onPushPhoto()">
+              <!-- <button mat-raised-button color="primary" aria-label="Push Photo" (click)="pushPhoto()">
+                <mat-icon>add_a_photo</mat-icon>Subir foto
+              </button> -->
+              <button mat-raised-button color="primary" (click)="fileInput.click()">
                 <mat-icon>add_a_photo</mat-icon>Subir foto
               </button>
+              <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/jpeg, image/jpg, image/png, image/webp" />
+            
               <button mat-raised-button color="primary" aria-label="Edit Info" (click)="openEditArtistModal()">
                 <mat-icon>edit</mat-icon>Editar artista
               </button>
-              <button mat-raised-button color="primary" aria-label="Delete Artist" (click)="onDeleteArtist()">
+             
+              <button mat-raised-button color="primary" aria-label="Delete Artist" (click)="deleteArtist()">
                 <mat-icon>delete</mat-icon>Borrar artista
               </button>
             </div>
@@ -49,7 +61,6 @@
             </mat-card>
           </div>
 
-          <!-- Default fallback -->
           <div *ngSwitchDefault>Default Content</div>
         </ng-container>
     </mat-grid-tile>

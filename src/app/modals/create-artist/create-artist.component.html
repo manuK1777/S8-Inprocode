@@ -37,22 +37,24 @@
     <mat-error> @if(artistForm.controls['phone'].hasError('pattern')){Invalid phone number}</mat-error>
   </mat-form-field>
 
-  <div cdkDropList class="drop-zone" (cdkDropListDropped)="onFileDropped($event)">
-    <div class="drop-message">
-      <p>Drag and drop the artist's photo here, or click to select one</p>
+  <!-- file upload  -->
+    <div class="select-message">
       <button mat-raised-button color="primary" (click)="fileInput.click()">
-        Choose File
+        Elige una imagen
+      </button>
+      <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/jpeg, image/jpg, image/png, image/webp" />
+      <button mat-raised-button color="warn" (click)="onDeleteImage()">
+        Eliminar imagen
       </button>
     </div>
-    <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept="image/jpeg, image/png" />
-  </div>
+ 
 
-   @if (previewUrl) {
+   @if (previewUrl && previewUrl !== 'no image') {
     <div class="img-preview">
-      <h3>Preview:</h3>
-      <img [src]="previewUrl" alt="Profile Preview" style="max-width: 100%; height: auto;" />
+      <img [src]="previewUrl" alt="Profile Preview" class="img-preview-img" />
     </div>
-  }
+  } 
+
 
   <div class="actions">
     <button mat-button (click)="onCancel()">Cancel</button>

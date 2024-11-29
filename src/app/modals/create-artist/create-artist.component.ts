@@ -1,12 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { ArtistsService } from '../../services/artists.service';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { artist } from '../../models/artist.model';
 
@@ -18,7 +17,7 @@ import { artist } from '../../models/artist.model';
     MatInputModule,
     ReactiveFormsModule,
     MatButtonModule, 
-    MatDialogModule
+    MatDialogModule,
   ],
   templateUrl: './create-artist.component.html',
   styleUrl: './create-artist.component.scss'
@@ -35,10 +34,8 @@ export class CreateArtistComponent implements OnInit {
     public dialogRef: MatDialogRef<CreateArtistComponent>,
     private http: HttpClient,
     private artistsService: ArtistsService,
-    @Inject(MAT_DIALOG_DATA) public data: { artist?: artist }
+    @Inject(MAT_DIALOG_DATA) public data: { artist?: artist } | null,
   ) {}
-
- 
 
   ngOnInit(): void {
     const artist: Partial<artist> = this.data?.artist || {};
@@ -53,28 +50,17 @@ export class CreateArtistComponent implements OnInit {
     });
   
     // Reset file and preview if editing
-    if (artist?.photo) {
-      this.previewUrl = `/uploads/${artist.photo}`;
-      this.selectedFile = null;
+    if (artist.photo) {
+      this.previewUrl = `http://localhost:5000/uploads/${artist.photo}`;
     } else {
-      this.previewUrl = null;
-      this.selectedFile = null;
+      this.previewUrl = 'no image';
     }
   }
-  
 
    onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.processFile(input.files[0]);
-    }
-  }
-
-  onFileDropped(event: Event): void {
-    const dragEvent = event as DragEvent; 
-    dragEvent.preventDefault(); 
-    if (dragEvent.dataTransfer && dragEvent.dataTransfer.files.length > 0) {
-      this.processFile(dragEvent.dataTransfer.files[0]);
     }
   }
 
@@ -85,9 +71,9 @@ export class CreateArtistComponent implements OnInit {
       return;
     }
 
-    // Validate file type (JPG or PNG)
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      alert('Invalid file type. Please upload a JPG or PNG image.');
+    // Validate file type
+    if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+      alert('Invalid file type. Please upload a JPG, PNG or WEBP image.');
       return;
     }
 
@@ -101,6 +87,22 @@ export class CreateArtistComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  onDeleteImage(): void {
+    if (this.data?.artist?.id) {
+      this.artistsService.deleteArtistImage(this.data.artist.id).subscribe({
+        next: () => {
+          console.log('Photo deleted successfully');
+          if (this.data && this.data.artist) {
+            this.data.artist.photo = null; 
+          }
+        },
+        error: (error) => {
+          console.error('Failed to delete photo:', error);
+        },
+      });
+    }
+  }
+  
   onSave(): void {
     if (this.artistForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
@@ -149,9 +151,7 @@ export class CreateArtistComponent implements OnInit {
           this.errorMessage = error.error?.message || 'Failed to create artist';
           this.isSubmitting = false;
         },
-      /**
-       * Reset the isSubmitting flag when the request is complete.
-       */
+      
         complete: () => {
           this.isSubmitting = false;
         }
@@ -161,8 +161,6 @@ export class CreateArtistComponent implements OnInit {
     this.markFormGroupTouched(this.artistForm);
   }
   }
-
-
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
@@ -175,15 +173,4 @@ export class CreateArtistComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
-
-  // loadArtists(): void {
-  //   this.artistsService.getArtists().subscribe({
-  //     next: (data: artist[]) => {
-  //       this.dataSource.data = data;
-  //     },
-  //     error: (error) => {
-  //       console.error('Failed to fetch artists', error);
-  //     },
-  //   });
-  // }
 }

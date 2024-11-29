@@ -6,7 +6,18 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-
+.mat-snack-bar-container {
+    font-size: 16px;
+    color: white;
+  }
+  
+  .snack-bar-error {
+    background-color: #e53935; // Red for error
+  }
+  
+  .mat-snack-bar-container .mat-simple-snackbar-action {
+    color: #ffeb3b; // Yellow for "Close" button
+  }
 // :root {
 //     @include mat.divider-overrides((
 //       color: orange,

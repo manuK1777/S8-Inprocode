@@ -31,16 +31,10 @@ router.get('/', artistsController.getAllArtist);
 router.get('/:id', artistsController.getArtistById);
 router.put('/:id', upload.single('photo'), artistsController.updateArtist); // Added multer for PUT
 router.delete('/:id', artistsController.deleteArtist);
+router.delete('/:id/photo', artistsController.deleteArtistImage);
 
 module.exports = router;
 
-
-// Routes
-// router.post('/api/artists', upload.single('photo'), artistsController.createArtist);
-// router.put('/api/artists/:id', upload.single('photo'), artistsController.updateArtist);
-// router.get('/api/artists', artistsController.getAllArtist);
-// router.get('/api/artists/:id', artistsController.getArtistById);
-// router.delete('/api/artists/:id', artistsController.deleteArtist);
 
 
 

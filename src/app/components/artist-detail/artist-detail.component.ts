@@ -9,9 +9,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { CreateArtistComponent } from '../../modals/create-artist/create-artist.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../modals/confirmation-dialog/confirmation-dialog.component';
 import { artist } from '../../models/artist.model';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
+import { MatSnackBar} from '@angular/material/snack-bar';
 
 export interface Tile {
   color: string;
@@ -45,13 +45,16 @@ export class ArtistDetailComponent implements OnInit {
   artistContact: string = '';
   artistPhone: string = '';
   tiles: Tile[] = [];
+  selectedFile: File | null = null; 
 
   constructor(
     private route: ActivatedRoute, 
     private router: Router,
     private artistsService: ArtistsService,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
   ) {}
+  
 
   ngOnInit(): void {
     this.artistId = Number(this.route.snapshot.paramMap.get('id'));
@@ -67,8 +70,8 @@ export class ArtistDetailComponent implements OnInit {
         this.artistContact = artist.contact;
         this.artistPhone = artist.phone;
         const imageUrl = artist.photo
-          ? `http://localhost:5000/uploads/${artist.photo}` // Use the photo field from the artist object
-          : 'https://via.placeholder.com/300'; // Fallback to placeholder if no photo is available
+          ? `http://localhost:5000/uploads/${artist.photo}` 
+          : 'http://localhost:5000/uploads/tortuga.jpg';
   
         this.tiles = [
           { text: 'Image', imageUrl, cols: 2, rows: 1, color: '', type: 'image' },
@@ -84,38 +87,41 @@ export class ArtistDetailComponent implements OnInit {
     });
   }
   
-  // loadArtistDetails(id: number): void {
-  //   this.artistsService.getArtistById(id).subscribe((artist) => {
-
-  //     this.artistName = artist.artistName;
-  //     this.artistEmail = artist.email;
-  //     this.artistWebPage = artist.webPage;
-  //     this.ArtistContact = artist.contact;
-  //     this.artistPhone = artist.phone;
-  //     const imageUrl = artist.photo
-  //     ? `http://localhost:5000/uploads/${artist.photo}` // Use the photo field from the artist object
-  //     : 'https://via.placeholder.com/300'; // Fallback to placeholder if no photo is available
-
-  //     this.tiles= [
-  //       {text: 'Image', imageUrl, cols: 2, rows: 1, color: '', type: 'image'},
-  //       {text: this.artistName, cols: 2, rows: 1, color: '', type: 'header'},
-  //       {text: 'Eventos', cols: 2, rows: 3, color: '', type: 'text'},
-  //       {text: 'Buttons', cols: 1, rows: 2, color: '', type: 'button'},
-  //       {text: 'Info', cols: 3, rows: 2, color: '', type: 'info'},
-  //     ];
-  //   });
-  // }
-
-  onPushPhoto(): void {
-    alert('Push Photo');
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.processFile(input.files[0]);
+    }
   }
 
-  // editArtist(id: number): void {
-  //   this.artistsService.editArtist(id, new FormData).subscribe((updatedArtist) => {
-  //     console.log('Artist updated successfully:', updatedArtist);
-  //     this.loadArtistDetails(this.artistId);
-  //   });
-  // }
+  private processFile(file: File): void {
+    // Validate file size (10 KB - 5 MB)
+    if (file.size < 10 * 1024 || file.size > 5 * 1024 * 1024) {
+      alert('File size must be between 10 KB and 5 MB.');
+      return;
+    }
+
+    // Validate file type
+    if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+      alert('Invalid file type. Please upload a JPG, PNG or WEBP image.');
+      return;
+    }
+
+    this.selectedFile = file;
+
+    // Send the file to the server
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    this.artistsService.updateArtistPhoto(this.artistId, file).subscribe({
+      next: () => {
+        this.loadArtistDetails(this.artistId);
+      },
+      error: (error) => {
+        console.error('Failed to upload photo:', error);
+      },
+    });
+  }
 
   editArtist(id: number, artist: artist): void {
     console.log('Artist object:', artist);
@@ -134,41 +140,26 @@ export class ArtistDetailComponent implements OnInit {
     this.artistsService.editArtist(id, formData).subscribe({
       next: (updatedArtist) => {
         console.log('Artist updated successfully:', updatedArtist);
-        this.loadArtistDetails(this.artistId); // Refresh artist details
+        this.loadArtistDetails(this.artistId); 
       },
       error: (error) => {
         console.error('Error updating artist:', error);
       },
     });
   }
-  // openEditArtistModal(artist: artist): void {
-  //   console.log('Opening edit modal with artist:', artist);
-  
-  //   const dialogRef = this.dialog.open(CreateArtistComponent, {
-  //     width: '500px',
-  //     data: { artist }, // Pass the artist data to the modal
-  //   });
-  
-  //   dialogRef.afterClosed().subscribe((result) => {
-  //     if (result?.action === 'edit') {
-  //       console.log('Result from modal:', result.artist);     
-  //     }
-  //   });
-  // }
-
-
+ 
   openEditArtistModal(): void {
     const artist = this.getArtistForEdit();
     console.log('Opening edit modal with artist:', artist);
-  
+
     const dialogRef = this.dialog.open(CreateArtistComponent, {
       width: '500px',
-      data: { artist }, // Pass artist data to the modal
+      data: { artist }, 
+  
     });
   
     dialogRef.afterClosed().subscribe((result) => {
       if (result?.action === 'edit' || result?.action === 'create') {
-        // Reload the artist details if changes were made
         console.log('Artist updated:', result.artist);
         this.loadArtistDetails(this.artistId); 
       }
@@ -176,23 +167,6 @@ export class ArtistDetailComponent implements OnInit {
     });
   }
   
-
-  private prepareFormData(artist: artist): FormData {
-    const formData = new FormData();
-    formData.append('artistName', artist.artistName || '');
-    formData.append('email', artist.email || '');
-    formData.append('webPage', artist.webPage || '');
-    formData.append('contact', artist.contact || '');
-    formData.append('phone', artist.phone || '');
-    if (artist.photo && typeof artist.photo !== 'string') {
-      formData.append('photo', artist.photo); // Only add the photo if it's a file
-    }
-  //  console.log('Prepared FormData:', Array.from(formData.entries()));
-    return formData;
-  }
-  
-  
-
   getArtistForEdit(): artist {
     const imageTile = this.tiles.find(tile => tile.type === 'image');
     const photo = imageTile?.imageUrl?.replace('http://localhost:5000/uploads/', '');
@@ -204,12 +178,41 @@ export class ArtistDetailComponent implements OnInit {
       webPage: this.artistWebPage,
       contact: this.artistContact,
       phone: this.artistPhone,
-      photo: photo || null // Optional photo field
+      photo: photo || null 
     };
   }
   
-  
-  onDeleteArtist(): void {
-    alert('Delete Artist');
-  }
+deleteArtist(): void {
+  const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    data: {
+      title: 'Confirmar eliminación',
+      message: '¿Estás seguro de que desea eliminar a este artista?',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+    },
+  });
+
+  dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+    if (confirmed) {
+      this.artistsService.deleteArtist(this.artistId).subscribe({
+        next: () => {
+          this.router.navigate(['/artistList']);
+          this.snackBar.open('Artista elmininado!', 'Cerrar', {
+            duration: 3000, 
+            verticalPosition: 'top', 
+            horizontalPosition: 'center',
+          });
+        },
+        error: (error) => {
+          console.error('Error deleting artist:', error);
+          this.snackBar.open('No se pudo eliminar el artista. Por favor, inténtelo de nuevo.', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['snack-bar-error'], 
+          });
+        },
+      });
+    }
+  });
+}
+
 }

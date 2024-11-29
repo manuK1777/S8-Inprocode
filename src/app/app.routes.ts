@@ -17,28 +17,5 @@ export const routes: Routes = [
         { path: 'artistList', component: ArtistListComponent },
         { path: 'calendario', component: FullCalendarComponent },
         { path: 'artist/:id/:artistSlug', component: ArtistDetailComponent}
-      ] },
-
-// export const routes: Routes = [
-//     {
-//       path: '',
-//       component: HomeComponent,
-//       children: [
-//         { path: '', component: DashboardComponent }, // Default route (dashboard)
-//         { path: 'artistList', component: ArtistListComponent },
-//         { path: 'calendar', component: FullCalendarComponent },
-//         // Add more routes here as needed
-//       ]
-//     },
-//     { path: '**', redirectTo: '' }
-//   ];
-
-
-    // { path: 'home', component: HomeComponent },
-    // { path: 'mapa', component: MapaComponent },
-    // { path: 'calendario', component: FullCalendarComponent },
-    // { path: 'grafics', component: GraficsComponent },
-    // { path: 'artistList', component: ArtistListComponent },
-    // { path: 'dashboard', component: DashboardComponent },
-    
+      ] }, 
 ];
