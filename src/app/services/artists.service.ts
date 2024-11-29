@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { artist } from '../models/artist.model';
 
@@ -16,7 +16,7 @@ export class ArtistsService {
     return this.http.get<artist[]>(this.apiUrl);
   }
 
-getArtistById(id: number): Observable<artist> {
+  getArtistById(id: number): Observable<artist> {
   const url = `${this.apiUrl}/${id}`;
   return this.http.get<artist>(url);
 }
@@ -27,6 +27,19 @@ getArtistById(id: number): Observable<artist> {
 
   addArtistWithPhoto(formData: FormData): Observable<any> {
     return this.http.post(this.apiUrl, formData); 
+  }
+ 
+  editArtist(id: number, formData: FormData): Observable<artist> {
+    console.log('FormData entries:');
+    for (let [key, value] of (formData as any).entries()) {
+      console.log(key, value);
+    }
+
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'multipart/form-data');
+  
+    return this.http.put<artist>(`${this.apiUrl}/${id}`, formData, { headers });
+    // return this.http.put<artist>(`${this.apiUrl}/${id}`, formData);   
   }
 
 }

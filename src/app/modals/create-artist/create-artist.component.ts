@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -6,6 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { ArtistsService } from '../../services/artists.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { artist } from '../../models/artist.model';
 
 @Component({
   selector: 'app-create-artist',
@@ -14,7 +17,8 @@ import { ArtistsService } from '../../services/artists.service';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule, 
+    MatDialogModule
   ],
   templateUrl: './create-artist.component.html',
   styleUrl: './create-artist.component.scss'
@@ -30,18 +34,34 @@ export class CreateArtistComponent implements OnInit {
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CreateArtistComponent>,
     private http: HttpClient,
-    private artistsService: ArtistsService
+    private artistsService: ArtistsService,
+    @Inject(MAT_DIALOG_DATA) public data: { artist?: artist }
   ) {}
 
+ 
+
   ngOnInit(): void {
+    const artist: Partial<artist> = this.data?.artist || {};
+  
+    // Initialize form with existing artist data or empty values
     this.artistForm = this.fb.group({
-      artistName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      webPage: ['', [Validators.pattern(/^(https?:\/\/)?[\w-]+(\.[\w-]+)+[/#?]?.*$/)]],
-      contact: ['', [Validators.required, Validators.minLength(2)]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)]]
+      artistName: [artist.artistName || '', [Validators.required, Validators.minLength(2)]],
+      email: [artist.email || '', [Validators.required, Validators.email]],
+      webPage: [artist.webPage || '', [Validators.pattern(/^(https?:\/\/)?[\w-]+(\.[\w-]+)+[/#?]?.*$/)]],
+      contact: [artist.contact || '', [Validators.required, Validators.minLength(2)]],
+      phone: [artist.phone || '', [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)]],
     });
+  
+    // Reset file and preview if editing
+    if (artist?.photo) {
+      this.previewUrl = `/uploads/${artist.photo}`;
+      this.selectedFile = null;
+    } else {
+      this.previewUrl = null;
+      this.selectedFile = null;
+    }
   }
+  
 
    onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -86,35 +106,62 @@ export class CreateArtistComponent implements OnInit {
       this.isSubmitting = true;
       this.errorMessage = '';
 
-      // Prepare FormData with the form values and the selected file
       const formData = new FormData();
       formData.append('artistName', this.artistForm.get('artistName')?.value);
       formData.append('email', this.artistForm.get('email')?.value);
       formData.append('webPage', this.artistForm.get('webPage')?.value || '');
       formData.append('contact', this.artistForm.get('contact')?.value);
       formData.append('phone', this.artistForm.get('phone')?.value);
+
       if (this.selectedFile) {
         formData.append('photo', this.selectedFile);
       }
 
-      this.artistsService.addArtistWithPhoto(formData).subscribe({
+      console.log('FormData before submission:', Array.from((formData as any).entries()));
+
+       // Check if editing or creating
+    if (this.data?.artist) {
+      console.log('Editing Artist ID:', this.data.artist.id);
+
+      // Editing existing artist
+      this.artistsService.editArtist(this.data.artist.id, formData).subscribe({
         next: (response) => {
-          console.log('Artist created successfully:', response);
-          this.dialogRef.close(response);
+          this.dialogRef.close({ action: 'edit', artist: response });
         },
         error: (error) => {
-          console.error('Error details:', error);
-          this.errorMessage = error.error?.message || error.error?.error || 'Failed to create artist';
+          console.error('Error updating artist:', error);
+          this.errorMessage = error.error?.message || 'Failed to update artist';
           this.isSubmitting = false;
         },
         complete: () => {
           this.isSubmitting = false;
-        },
+        }
       });
     } else {
-      this.markFormGroupTouched(this.artistForm);
+      // Creating new artist
+      this.artistsService.addArtistWithPhoto(formData).subscribe({
+        next: (response) => {
+          console.log('Artist created successfully:', response);
+          this.dialogRef.close({ action: 'create', artist: response });
+        },
+        error: (error) => {
+          console.error('Error creating artist:', error);
+          this.errorMessage = error.error?.message || 'Failed to create artist';
+          this.isSubmitting = false;
+        },
+      /**
+       * Reset the isSubmitting flag when the request is complete.
+       */
+        complete: () => {
+          this.isSubmitting = false;
+        }
+      });
     }
+  } else {
+    this.markFormGroupTouched(this.artistForm);
   }
+  }
+
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {
@@ -128,4 +175,15 @@ export class CreateArtistComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  // loadArtists(): void {
+  //   this.artistsService.getArtists().subscribe({
+  //     next: (data: artist[]) => {
+  //       this.dataSource.data = data;
+  //     },
+  //     error: (error) => {
+  //       console.error('Failed to fetch artists', error);
+  //     },
+  //   });
+  // }
 }

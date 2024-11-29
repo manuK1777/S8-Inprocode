@@ -32,11 +32,13 @@ mat-mini-fab {
 }
 
 .tile-image {
-
         width: 180px;
         height: 180px;
         object-fit: cover;
-
-    
+        display: block;
+        margin: auto;
 }
+
+
+
   

@@ -5,6 +5,6 @@ export interface artist {
     webPage?: string;
     contact: string;
     phone: string;
-    photo?: string;
+    photo?: string | null;
   }
   

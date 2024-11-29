@@ -51,7 +51,7 @@ export class ArtistListComponent implements AfterViewInit {
     const dialogRef = this.openModalCreateArtistService.openCreateArtistModal();
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result?.action === 'create') {
         this.loadArtists();
       }
     });

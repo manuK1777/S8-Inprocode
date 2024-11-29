@@ -1,29 +1,6 @@
-const db = require("../config/db");
+
+const db = require('../config/db');
 const path = require("path");
-
-const multer = require("multer");
-
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, "../uploads")); 
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname)); // Generate unique file name
-    },
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    // Validate file type
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    if (allowedMimeTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only JPEG and PNG are allowed.'), false);
-    }
-  },
-});
 
 exports.getAllArtist = async (req, res) => {
   try {
@@ -46,7 +23,6 @@ exports.getArtistById = async (req, res) => {
 };
 
 exports.createArtist = async (req, res) => {
-
   const { artistName, email, webPage, contact, phone } = req.body;
   const photo = req.file ? req.file.filename : null;
 
@@ -83,26 +59,164 @@ exports.createArtist = async (req, res) => {
   }
 };
 
-exports.updateArtist = async (req, res) => {
-  const { id } = req.params;
-  const { artistName, email, webPage, contact, phone } = req.body;
+// Get all artists
+exports.getAllArtist = async (req, res) => {
   try {
-    await db.query(
-      "UPDATE artists SET artistName = ?, email = ?, webPage = ?, contact = ?, phone = ? WHERE id = ?",
-      [artistName, email, webPage, contact, phone, id]
-    );
-    res.json({ id, artistName, email, webPage, contact, phone });
+    const [artists] = await db.query("SELECT * FROM artists");
+    res.json(artists);
   } catch (error) {
-    res.status(500).json({ error: "Failed to update artist" });
+    res.status(500).json({ error: "Failed to retrieve artists" });
   }
 };
 
+// Get artist by ID
+exports.getArtistById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [artist] = await db.query("SELECT * FROM artists WHERE id = ?", [id]);
+    if (!artist.length) return res.status(404).json({ error: "Artist not found" });
+    res.json(artist[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve artist" });
+  }
+};
+
+// Create a new artist
+exports.createArtist = async (req, res) => {
+  const { artistName, email, webPage, contact, phone } = req.body;
+  const photo = req.file ? req.file.filename : null;
+
+  if (!artistName || !email || !contact || !phone) {
+    return res.status(400).json({
+      error: "Missing required fields",
+      received: req.body,
+    });
+  }
+
+  try {
+    const result = await db.query(
+      "INSERT INTO artists (artistName, email, webPage, contact, phone, photo) VALUES (?, ?, ?, ?, ?, ?)",
+      [artistName, email, webPage || null, contact, phone, photo]
+    );
+
+    res.status(201).json({
+      id: result[0].insertId,
+      artistName,
+      email,
+      webPage,
+      contact,
+      phone,
+      photo,
+    });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Failed to create artist", details: error.message });
+  }
+};
+
+// Update an existing artist
+exports.updateArtist = async (req, res) => {
+  const { id } = req.params;
+  const { artistName, email, webPage, contact, phone } = req.body;
+  const photo = req.file ? req.file.filename : null; // Handle uploaded photo
+
+  try {
+    // Check if the artist exists
+    const [existingArtist] = await db.query("SELECT * FROM artists WHERE id = ?", [id]);
+    if (!existingArtist.length) {
+      return res.status(404).json({ error: "Artist not found" });
+    }
+
+    // Update only provided fields or fallback to existing values
+    const updatedArtist = {
+      artistName: artistName || existingArtist[0].artistName,
+      email: email || existingArtist[0].email,
+      webPage: webPage || existingArtist[0].webPage,
+      contact: contact || existingArtist[0].contact,
+      phone: phone || existingArtist[0].phone,
+      photo: photo || existingArtist[0].photo, // Retain existing photo if no new one is uploaded
+    };
+
+    // Perform the update
+    await db.query(
+      "UPDATE artists SET artistName = ?, email = ?, webPage = ?, contact = ?, phone = ?, photo = ? WHERE id = ?",
+      [
+        updatedArtist.artistName,
+        updatedArtist.email,
+        updatedArtist.webPage,
+        updatedArtist.contact,
+        updatedArtist.phone,
+        updatedArtist.photo,
+        id,
+      ]
+    );
+
+    res.json(updatedArtist);
+  } catch (error) {
+    console.error("Failed to update artist:", error);
+    res.status(500).json({ error: "Failed to update artist", details: error.message });
+  }
+};
+
+// Delete an artist
 exports.deleteArtist = async (req, res) => {
   const { id } = req.params;
   try {
     await db.query("DELETE FROM artists WHERE id = ?", [id]);
-    res.json({ message: "Artist deleted" });
+    res.json({ message: "Artist deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete artist" });
   }
 };
+
+
+
+
+
+
+
+
+// exports.updateArtist = async (req, res) => {
+
+//   console.log('Request body:', req.body);
+//   console.log('Uploaded file:', req.file);
+
+//   const { id } = req.params;
+//   const { artistName, email, webPage, contact, phone } = req.body;
+//   const photo = req.file ? req.file.filename : null;
+
+ 
+
+//   const updatedPhoto = req.file ? req.file.filename : existingArtist[0].photo;
+
+//   try {
+//     // Check if the artist exists
+//     const [existingArtist] = await db.query('SELECT * FROM artists WHERE id = ?', [id]);
+//     if (!existingArtist.length) {
+//       return res.status(404).json({ error: 'Artist not found' });
+//     }
+
+//     const updatedPhoto = photo || existingArtist[0].photo;
+
+//     // Update the artist
+//     await db.query(
+//       'UPDATE artists SET artistName = ?, email = ?, webPage = ?, contact = ?, phone = ?, photo = ? WHERE id = ?',
+//       [
+//         artistName || existingArtist[0].artistName,
+//         email || existingArtist[0].email,
+//         webPage || existingArtist[0].webPage,
+//         contact || existingArtist[0].contact,
+//         phone || existingArtist[0].phone,
+//         photo || existingArtist[0].photo,
+//         id,
+//       ]
+//     );
+
+//     // Return updated artist details
+//     const [updatedArtist] = await db.query('SELECT * FROM artists WHERE id = ?', [id]);
+//     res.json(updatedArtist[0]);
+//   } catch (error) {
+//     console.error('Failed to update artist:', error);
+//     res.status(500).json({ error: 'Failed to update artist' });
+//   }
+// };
